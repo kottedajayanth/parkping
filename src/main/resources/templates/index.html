@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkPing | Premium Parking Solution</title>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
+
+    <style>
+        :root {
+            --bg: #0F172A;
+            --card: rgba(15, 23, 42, 0.9);
+            --accent: #38BDF8;
+            --text: #F8FAFC;
+            --success: #2DD4BF;
+            --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(45, 212, 191, 0.1) 0, transparent 50%);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .card {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .visual-story {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step {
+            font-size: 22px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .step-label {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 800;
+        }
+
+        .connector {
+            color: rgba(255, 255, 255, 0.1);
+            margin-top: -20px;
+            font-weight: bold;
+        }
+
+        .status-dot {
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .alert {
+            background: #ff4757;
+            color: white;
+        }
+
+        .pulse {
+            background: var(--accent);
+            animation: ping 1.5s infinite;
+        }
+
+        @keyframes ping {
+            70% {
+                box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+            }
+        }
+
+        h2 {
+            color: var(--accent);
+            letter-spacing: -1.5px;
+            margin-bottom: 25px;
+            font-weight: 800;
+        }
+
+        .form-content {
+            transition: var(--transition);
+        }
+
+        textarea,
+        input[type="file"] {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+
+        .one-tap-hint {
+            font-size: 11px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        #submitBtn {
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 700;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        #submitBtn:disabled {
+            background: #475569;
+            opacity: 0.6;
+        }
+
+        #successMsg {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            margin-top: 20px;
+            color: var(--success);
+            transition: var(--transition);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--success);
+            transition: width 1s linear;
+        }
+
+        .loader {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="visual-story">
+            <div class="step-container">
+                <div class="step">🚗<div class="status-dot alert">!</div>
+                </div><span class="step-label">Blocked</span>
+            </div>
+            <div class="connector">···</div>
+            <div class="step-container">
+                <div class="step">📱<div class="status-dot pulse"></div>
+                </div><span class="step-label">Ping</span>
+            </div>
+            <div class="connector">···</div>
+            <div class="step-container">
+                <div class="step">✅</div><span class="step-label">Solved</span>
+            </div>
+        </div>
+
+        <h2>PARKPING</h2>
+
+        <div class="form-content" id="formContent">
+            <form id="notifyForm">
+                <textarea name="note" id="note" placeholder="Add a note (Optional)"></textarea>
+                <input type="file" name="image" id="image" accept="image/*">
+                <p class="one-tap-hint">⚡ Quick Alert: Just tap notify me instantly.</p>
+                <button type="submit" id="submitBtn">Notify Owner</button>
+            </form>
+        </div>
+
+        <div id="successMsg">
+            <div style="font-size: 24px;">✓ Sent Successfully</div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <p id="cdText" style="font-size: 11px; margin-top: 5px; color: #94A3B8;"></p>
+        </div>
+    </div>
+
+    <script>
+        const COOLDOWN_TIME = 30; // Set to 30 for testing per your request
+        const formContent = document.getElementById('formContent');
+        const form = document.getElementById('notifyForm');
+        const successMsg = document.getElementById('successMsg');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function updateUI() {
+            const expiry = localStorage.getItem('pp_cooldown');
+            if (!expiry || Date.now() >= expiry) {
+                localStorage.removeItem('pp_cooldown');
+                unlockUI();
+                return;
+            }
+            const remaining = Math.floor((expiry - Date.now()) / 1000);
+            lockUI(remaining);
+            setTimeout(updateUI, 1000);
+        }
+
+        function lockUI(seconds) {
+            formContent.style.opacity = "0.4";
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Locked";
+            document.getElementById('note').disabled = true;
+            document.getElementById('image').disabled = true;
+            successMsg.style.display = 'block';
+            setTimeout(() => { successMsg.style.opacity = "1"; successMsg.style.transform = "translateY(0)"; }, 50);
+            const percent = ((COOLDOWN_TIME - seconds) / COOLDOWN_TIME) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('cdText').innerText = `Re-ping available in ${seconds}s`;
+        }
+
+        function unlockUI() {
+            successMsg.style.opacity = "0";
+            successMsg.style.transform = "translateY(10px)";
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+                formContent.style.opacity = "1";
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "Notify Owner";
+                document.getElementById('note').disabled = false;
+                document.getElementById('image').disabled = false;
+            }, 500);
+        }
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            submitBtn.innerHTML = '<span class="loader"></span> Sending...';
+            submitBtn.disabled = true;
+            try {
+                const response = await fetch('/notify-v2', { method: 'POST', body: new FormData(form) });
+                if (response.ok) {
+                    form.reset();
+                    localStorage.setItem('pp_cooldown', Date.now() + (COOLDOWN_TIME * 1000));
+                    updateUI();
+                }
+            } catch (err) { alert("Error"); unlockUI(); }
+        };
+        updateUI();
+    </script>
+</body>
+
+</html>

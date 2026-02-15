@@ -1,0 +1,12 @@
+package com.parkping.parkping;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ParkpingApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ParkpingApplication.class, args);
+    }
+}
